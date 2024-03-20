@@ -13,7 +13,6 @@
     "background": "#282c34"
   },
   "terminal_background": "p:background",
-  "console_title_template": "{{ .UserName }}@{{ .HostName }}",
   "blocks": [
     {
       "alignment": "left",
@@ -22,7 +21,6 @@
         {
           "foreground": "p:yellow",
           "style": "plain",
-          "template": "{{ .UserName }}@{{ .HostName }} ",
           "type": "session"
         },
         {
