@@ -19,11 +19,6 @@
       "newline": true,
       "segments": [
         {
-          "foreground": "p:yellow",
-          "style": "plain",
-          "type": "session"
-        },
-        {
           "foreground": "p:blue",
           "style": "plain",
           "properties": {
