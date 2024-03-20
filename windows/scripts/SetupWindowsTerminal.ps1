@@ -7,6 +7,68 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 
+# Function to check if a command exists (for checking if git is installed)
+function Test-CommandExists {
+    param (
+        [string]$Command
+    )
+
+    $exists = $false
+    try {
+        if (Get-Command $Command -ErrorAction Stop) {
+            $exists = $true
+        }
+    } catch {
+        $exists = $false
+    }
+    return $exists
+}
+
+# First check if Git for Windows is installed by looking for the git command
+if (Test-CommandExists 'git') {
+    Write-Host "Git is already installed. Version: $(git --version)"
+} else {
+    Write-Host "Git is not installed. Attempting to install via winget..."
+
+    # Ensure winget is available
+    if (Test-CommandExists 'winget') {
+        # Install Git using winget
+        winget install --id Git.Git -e --source winget
+        if ($?) {
+            Write-Host "Git has been successfully installed."
+        } else {
+            Write-Host "Failed to install Git."
+        }
+    } else {
+        Write-Host "winget is not available. Please install Windows Package Manager or install Git manually from:"
+        Write-Host "https://git-scm.com/download/win"
+    }
+}
+
+# Install zsh git aliases for windows
+Install-Module git-aliases -Scope AllUsers -AllowClobber
+
+# Import git aliases in the profile
+$importGitZshAliases = 'Import-Module git-aliases -DisableNameChecking'
+
+# Check if the profile file exists, and create it if it does not
+if (-not (Test-Path -Path $PROFILE.AllUsersAllHosts)) {
+    New-Item -ItemType File -Path $PROFILE.AllUsersAllHosts -Force
+}
+
+# Read the content of the profile
+$profileContent = Get-Content -Path $PROFILE.AllUsersAllHosts
+
+# Check if the line already exists in the profile
+if ($profileContent -notcontains $importGitZshAliases) {
+    # Add the line to the profile
+    Add-Content -Path $PROFILE.AllUsersAllHosts -Value $importGitZshAliases
+    Write-Host "$PROFILE.AllUsersAllHosts profile updated to import zsh git aliases."
+} else {
+    Write-Host "$PROFILE.AllUsersAllHosts profile already imports zsh git aliases, skipping..."
+}
+
+
 # Install oh-my-posh
 Write-Host "Installing oh-my-posh..."
 winget install JanDeDobbeleer.OhMyPosh -s winget
@@ -56,14 +118,14 @@ $escapedProfileContent = [regex]::Escape($profileContent)
 
 # Check if the profile already contains the specified content
 if (-not (Select-String -Path $PROFILE.AllUsersAllHosts -Pattern $escapedProfileContent -Quiet)) {
-    "Setting default oh-my-posh config..."
+    "Setting default oh-my-posh config in $PROFILE.AllUsersAllHosts..."
     Add-Content -Path $PROFILE.AllUsersAllHosts -Value $profileContent
 }
 else {
-    Write-Host "Default oh-my-posh config already correct, skipping..."
+    Write-Host "Default oh-my-posh config already correct in  $PROFILE.AllUsersAllHosts, skipping..."
 }
 
 # Perform the operation to add posh-git to the profile
-Add-PoshGitToProfile
+Add-PoshGitToProfile -AllUsers -AllHosts
 
 Write-Host "Done. Restart your terminal for changes to take effect."
