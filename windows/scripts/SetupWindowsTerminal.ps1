@@ -1,3 +1,8 @@
+# Setup script for my Windows terminal environment
+# This is purely for personal use and probably not applicable to anyone else
+# Use at your own risk
+# https://github.com/jjjccw
+
 # Check if the script is running as an administrator
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     Write-Host "This script requires administrator privileges. Please rerun the script as an administrator."
