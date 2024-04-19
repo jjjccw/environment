@@ -104,7 +104,7 @@ Write-Host "Windows Terminal settings.json has been successfully replaced."
 $jsonConfigUrl = "https://github.com/jjjccw/environment/raw/main/windows/jjjccw.omp.json"
 
 # Download the JSON file and place it in the $env:POSH_THEMES_PATH directory
-$themePath = Join-Path $env:POSH_THEMES_PATH "jjjccw.omp.json"
+$themePath = Join-Path -Path $env:POSH_THEMES_PATH -ChildPath "jjjccw.omp.json"
 Invoke-WebRequest -Uri $jsonConfigUrl -OutFile $themePath
 
 # Check if the PowerShell profile exists, and create it if it does not
@@ -125,9 +125,6 @@ $escapedProfileContent = [regex]::Escape($profileContent)
 if (-not (Select-String -Path $PROFILE.AllUsersAllHosts -Pattern $escapedProfileContent -Quiet)) {
     "Setting default oh-my-posh config in $PROFILE.AllUsersAllHosts..."
     Add-Content -Path $PROFILE.AllUsersAllHosts -Value $profileContent
-}
-else {
-    Write-Host "Default oh-my-posh config already correct in  $PROFILE.AllUsersAllHosts, skipping..."
 }
 
 # Perform the operation to add posh-git to the profile
